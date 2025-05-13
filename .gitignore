@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment files
+.env
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# Output directories
+dist/
+build/
+
+# Optional: if using nodemon
+nodemon-debug.log
+
+# Optional: if using coverage tools
+coverage/
