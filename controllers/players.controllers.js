@@ -3,7 +3,7 @@ import { Player } from "../models/players.model.js";
 // Get all players
 export const getPlayers = async (req, res) => {
     try {
-        const players = await Player.find();
+        const players = await Player.find().select("-country  -runs  -salary");
         res.status(200).json({
             success: true,
             message: "Players fetched successfully",
@@ -21,7 +21,11 @@ export const getPlayers = async (req, res) => {
 // Create a new player
 export const createPlayer = async (req, res) => {
     try {
-        const player = new Player(req.body);
+        const { name, team, country, role, runs, salary } = req.body;
+        const player = new Player({
+            name, team, country, role, runs, salary, image: req.file?.path || "",
+        });
+
         await player.save();
         res.status(201).json({
             success: true,
@@ -36,7 +40,6 @@ export const createPlayer = async (req, res) => {
         });
     }
 };
-
 // Get a single player
 export const getPlayerById = async (req, res) => {
     try {
@@ -65,22 +68,26 @@ export const getPlayerById = async (req, res) => {
 // Update a player
 export const updatePlayer = async (req, res) => {
     try {
-        const player = await Player.findByIdAndUpdate(req.params.id, req.body, {
+        const playerId = req.params.id;
+        const updates = req.body;
+
+        if (req.file) {
+            updates.image = req.file.path;
+        }
+
+        const updatedPlayer = await Player.findByIdAndUpdate(playerId, updates, {
             new: true,
             runValidators: true,
         });
 
-        if (!player) {
-            return res.status(404).json({
-                success: false,
-                message: "Player not found",
-            });
+        if (!updatedPlayer) {
+            return res.status(404).json({ success: false, message: "Player not found" });
         }
 
         res.status(200).json({
             success: true,
             message: "Player updated successfully",
-            data: player,
+            data: updatedPlayer,
         });
     } catch (error) {
         res.status(500).json({
